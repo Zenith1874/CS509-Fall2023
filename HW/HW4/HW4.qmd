@@ -1,0 +1,370 @@
+---
+title: "HW 4"
+author: "Zheng Cui"
+format: html
+---
+
+### 1. Linear interval search
+
+#### (40%) Write an R function count.features.linear(chr, x, y, GFF) to find the number of overlapping features between chromosome coordinates x and y on a given chromosome chr and annotation data frame GFF. You must use for-loop to do the counting.
+
+```{r}
+# imoprt GFF Data 
+library(stringr)
+file <- "E:/Language/R/gencode.v44.primary_assembly.annotation.gff3"
+GFF <- read.table(file, header = FALSE, sep = "\t")
+colnames(GFF) <- c("seqid", "source", "type", "start", "end",
+                   "score", "strand", "phase", "attributes")
+rownames(GFF) <- 1:nrow(GFF)
+```
+
+```{r}
+
+count.features.linear <- function(chr, x, y, GFF) {
+  # Initialize count to 0
+  count <- 0
+  
+  # Loop through each row in the GFF data frame
+  for (i in 1:nrow(GFF)) {
+    # Check if the current feature is on the given chromosome
+    if (GFF$seqid[i] == chr) {
+      # Check if the current  qps with the interval [x, y]
+      if (GFF$start[i] <= y && GFF$end[i] >= x) {
+        count <- count + 1
+      }
+    }
+  }
+  
+  return(count)
+}
+
+# E.g
+chromosome <- "chr1"
+interval_start <- 1
+interval_end <- 20000
+result <- count.features.linear(chromosome, interval_start, interval_end, GFF)
+cat("Number overlapping features between chromosome coordinates x and y:", result, "\n")
+
+
+
+```
+
+### 2. Vectorized interval search
+
+#### (30%) Write an R function count.features.vectorized(chr, x, y, GFF) to find the number of features between position x and position y on a given chromosome chr and annotation data frame GFF. You must avoid using a for-loop and use vectorized operations instead.
+
+```{r}
+count.features.vectorized <- function(chr, x, y, GFF) {
+  # filter given chromosome chr
+  chr_rows <- GFF[GFF$seqid == chr,]
+  
+  # count the number of features between position x and position y 
+  overlaps <- sum(chr_rows$start <= y & chr_rows$end >= x)
+  
+  return(overlaps)
+}
+
+# E.g
+chromosome <- "chr1"
+interval_start <- 1
+interval_end <- 20000
+result <- count.features.vectorized(chromosome, interval_start, interval_end, GFF)
+cat("Number overlapping features between chromosome coordinates x and y:", result, "\n")
+
+
+```
+
+### 3. Binary interval search
+
+#### (20%) Write an R function count.features.binary(chr, x, y, sorted.coordinates) to find the number of features between position x and position y on a given chromosome chr and annotation data frame GFF. You must use the binary search algorithms we discussed in class. You need to sort the coordinates of all features on the same chromosome before you call the function. An option is the R function sort().
+
+```{r}
+# sort GFF Data seqid == "chr1"
+sorted_coordinates_chr1 <- list(start = sort(GFF$start[GFF$seqid == "chr1"]),
+                           end = sort(GFF$end[GFF$seqid == "chr1"]))
+
+```
+
+```{r}
+# FIND ALL TARGET ENDS AFTER QUERY START 
+find_query_start <- function(ends, query_start) {
+  L <- 1
+  R <- length(ends)
+  
+  while (L <= R) {
+    M <- (L + R) %/% 2
+    if (ends[M] < query_start) {
+      L <- M + 1
+    } else {
+      R <- M - 1
+    }
+  }
+  
+  return(R + 1)
+}
+
+# FIND ALL TARGET STARTS BEFORE QUERY END  
+find_query_end <- function(starts, query_end) {
+  L <- 1
+  R <- length(starts)
+  
+  while (L <= R) {
+    M <- (L + R) %/% 2
+    if (starts[M] > query_end) {
+      R <- M - 1
+    } else {
+      L <- M + 1
+    }
+  }
+  
+  return(L - 1)
+}
+
+count.features.binary <- function(chr, x, y, sorted_coordinates_chr1) {
+  # Retrieve the sorted start and end coordinates
+  sorted_starts <- sorted_coordinates_chr1$start
+  sorted_ends <- sorted_coordinates_chr1$end
+  
+  start_idx <- find_query_start(sorted_ends, x)
+  end_idx <- find_query_end(sorted_starts, y)
+  
+  # Count of features is the difference between the indices (+1 since both are inclusive), 
+  # but we should also handle the case where no overlapping features are found.
+  count <- max(0, end_idx - start_idx + 1)
+  
+  return(count)
+}
+
+# Assuming you have sorted_coordinates properly set up:
+chromosome <- "chr3"
+interval_start <- 1
+interval_end <- 20000
+result <- count.features.binary(chromosome, interval_start, interval_end, sorted_coordinates_chr1)
+cat("Number of overlapping features:", result, "\n")
+
+
+```
+
+### 4. Reporting the runtime
+
+#### (10%) Test the three functions on the same input and human genome annotation file. Report the runtime as for each method on at least two examples using the system.time() function. Do not include time for loading the genome annotation file or sorting the coordinates.
+
+```{r}
+chromosome1 <- "chr1"
+interval_start1 <- 1
+interval_end1 <- 20000
+
+# Linear search
+linear_time1 <- system.time({
+  result1_linear <- count.features.linear(chromosome1, interval_start1, interval_end1, GFF)
+})
+cat("Linear search runtime for example 1:", linear_time1["elapsed"], "seconds\n")
+
+# Vectorized search
+vectorized_time1 <- system.time({
+  result1_vectorized <- count.features.vectorized(chromosome1, interval_start1, interval_end1, GFF)
+})
+cat("Vectorized search runtime for example 1:", vectorized_time1["elapsed"], "seconds\n")
+
+# Binary search
+binary_time1 <- system.time({
+  result1_binary <- count.features.binary(chromosome1, interval_start1, interval_end1, sorted_coordinates_chr1)
+})
+cat("Binary search runtime for example 1:", binary_time1["elapsed"], "seconds\n")
+```
+
+### E1 (100%). Query interval spanning only known coordinates
+
+#### If the query interval \[x, y\] has a special property such that x and y must take values from coordinates of some intervals in the annotation, can you develop code to run even faster than the best general solutions you have developed above?
+
+#### Note
+
+#### x and y do not have to be from the save interval in the annotation. For example, if the annotation includes intervals {(1,3),(8,15),(2,29)}, then(3,8) is a valid query interval,as well as (8,15)
+
+```{r}
+# sort GFF
+sorted_gff <- GFF[order(GFF$start, GFF$end),]
+
+ 
+sorted_coords <- c(sorted_gff$start, sorted_gff$end)
+sorted_coords <- sort(unique(sorted_coords))  # sort and unique
+#  fibonacci_search function
+fibonacci_search <- function(arr, x) {
+  fibMm2 <- 0  # (m-2)nd Fibonacci number
+  fibMm1 <- 1  # (m-1)st Fibonacci number
+  fibM <- fibMm2 + fibMm1
+  
+  # Gets the smallest value in the Fibonacci sequence that is larger than the array length
+  while (fibM < length(arr)) {
+    fibMm2 <- fibMm1
+    fibMm1 <- fibM
+    fibM <- fibMm2 + fibMm1
+  }
+  
+  offset <- -1
+  
+  while (fibM > 1) {
+    i <- min(offset + fibMm2, length(arr)-1)
+    
+    if (arr[i] < x) {
+      fibM <- fibMm1
+      fibMm1 <- fibMm2
+      fibMm2 <- fibM - fibMm1
+      offset <- i
+    } else if (arr[i] > x) {
+      fibM <- fibMm2
+      fibMm1 <- fibMm1 - fibMm2
+      fibMm2 <- fibM - fibMm1
+    } else {
+      return(i)
+    }
+  }
+  
+  if (fibMm1 && arr[length(arr)] == x) {
+    return(length(arr))
+  }
+  
+  return(-1)
+}
+
+# query in fibonacci
+query_with_fibonacci <- function(x, y, sorted_coords) {
+  # use fibonacci to find x and y
+  start_index <- fibonacci_search(sorted_coords, x)
+  end_index <- fibonacci_search(sorted_coords, y)
+  
+  if (start_index == -1 || end_index == -1) {
+    stop("Invalid x or y provided!")
+  }
+  
+  # located 
+  overlapped_intervals <- sorted_coords[(start_index+1):end_index]
+  
+  return(overlapped_intervals)
+}
+
+ 
+
+x <- 577   
+y <- 20007  
+
+result <- query_with_fibonacci(x, y, sorted_coords)
+print(result)
+
+
+
+```
+
+### E2 (100%). Overlapping intervals for every interval
+
+#### If you are given a collection of n intervals \[x1, y1 \], . . ., \[xn, yn\] , can you design an algorithm with implementation in any language your like to find overlapping intervals for each and every interval in less than quadratic time little-oh o(n\^2)?
+```{r}
+
+
+# Define a function to find overlap in a series of time intervals
+find_overlapping_intervals <- function(intervals) {
+  
+# Create an events list
+  events <- list()
+# For each interval, add a start event and an end event
+# event is a vector containing a point in time, an event type (start or end), and an interval index
+  for (i in 1:length(intervals)) {
+    events <- c(events, list(c(intervals[[i]][1], TRUE, i)), list(c(intervals[[i]][2], FALSE, i)))
+  }
+  
+# Sort events by their coordinates, and then by their type (start before end)
+  sorted_events <- events[order(sapply(events, '[', 1), -sapply(events, '[', 2))]
+  
+  
+# Initializes a vector to track the current activity interval
+  active_intervals <- integer(0)
+  
+# Initializes a list of the same length as the interval list to store overlapping interval indexes
+  overlap <- vector("list", length(intervals))
+  
+# use for to iterate over sorted events
+  for (event in sorted_events) {
+    idx <- event[3]
+    
+    if (event[2]) { # If it's a start event
+      for (active_idx in active_intervals) {
+# Adds each other's indexes to the overlapping list of currently active intervals and current intervals
+        overlap[[idx]] <- c(overlap[[idx]], active_idx)
+        overlap[[active_idx]] <- c(overlap[[active_idx]], idx)
+      }
+# Adds the current interval to the active interval list
+      active_intervals <- c(active_intervals, idx)
+    } else { # If it's an end event
+      active_intervals <- setdiff(active_intervals, idx)# Removes the current interval from the active interval list
+    }
+  }
+# Returns a list of overlapping intervals
+  return(overlap)
+}
+
+# Define a list of intervals to test
+intervals <- list(c(1, 5), c(2, 6), c(1, 8), c(7, 9), c(10, 15))
+
+# Using the function and print the result
+overlaps <- find_overlapping_intervals(intervals)
+print(overlaps)
+```
+
+
+#### 1. Function definition:
+
+The find_overlapping_intervals function receives a list of intervals, where each element is a two-digit operator that represents the start and end point of an interval.
+
+#### 2. Create event list:
+
+The function first creates an empty list, events.
+For each interval in the interval, the function adds two events to events:
+A "start" event (marked TRUE) that contains the start time of the interval and the index of the interval.
+An "end" event (marked FALSE) that contains the end time of the interval and the index of the interval.
+This way, each interval is represented by two events in Events.
+
+#### 3. Sort events:
+
+Use the order function to sort the events, first by point in time (time coordinates) and then by event type (start event before end event).
+The sorting step is important to check for overlap later.
+
+#### 4. Detection overlap:
+
+Initialize active_intervals (an empty integer initialization) to track the time interval for the current activity (that is, it has started but not yet ended).
+Initializes overlap (a list) to store indexes of other intervals that each interval overlaps.
+
+#### 5. Handle each event:
+
+Iterate through the sorted list of events:
+If a start event is encountered, its index is added to the mid-active_interval and the overlap is updated to reflect the overlap between the current active interval and the newly started interval.
+If it is an end event, the active_interval removes the corresponding interval index because the interval has ended.
+
+#### 6. Return result:
+
+The function finally overlaps a list where each element is an integer operator, containing the indexes of other intervals that overlap the corresponding interval returns.
+
+#### 7. Test function:
+
+In the last part of the code, I use list(c(1, 5), c(2, 6), c(1, 8), c(7, 9), c(10, 15)), call the function to test, and then print the result for overlaps.
+
+
+
+
+### E3 (25%). Biological application
+
+#### Demonstrate on a biology dataset where you can apply any program you developed above. You must provide biological motivation and result interpretation for this part of work
+
+```{r}
+# Convert sorted_coordinates_chr1 to intervals format
+ intervals_chr1 <- lapply(1:length(sorted_coordinates_chr1$start), function(i) {
+  c(sorted_coordinates_chr1$start[i], sorted_coordinates_chr1$end[i])
+})
+
+# Apply the find_overlapping_intervals function
+overlaps_chr1 <- find_overlapping_intervals(intervals_chr1)
+head(overlaps_chr1, 5)
+```
+```{r}
+head(overlaps_chr1, 5)
+
+```

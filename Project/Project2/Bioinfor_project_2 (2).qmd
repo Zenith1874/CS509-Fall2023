@@ -1,0 +1,191 @@
+---
+title: "Bioinformatics_DEGs"
+format: html
+editor: visual
+---
+
+## DEGs
+
+**Task 2.** Apply PCA on raw read count data, report whether you observe strong effects on gene expression due to age, sex, or library size. Please visualize all three covariates on a single PCA plot.
+
+```{r echo: false}
+# load setup info
+library("Rsamtools")
+library("GenomicAlignments")
+library("BiocParallel")
+
+setwd("E:/Bioinfo_project")
+
+
+```
+
+```{r}
+sampleTable <- read.csv ("Sample_table.csv", stringsAsFactors=F)
+FC <- read.csv ("Feature_counts.csv", header = TRUE, row.names = 1, stringsAsFactors = FALSE)
+
+coldata <- read.csv ("Sample_table.csv", stringsAsFactors=F)
+coldata <- coldata[,c("sex","Age")]
+coldata <- cbind(coldata, total = colSums(FC))
+```
+
+## REGULARIZED LOG TRANSFORMATION
+
+```{r}
+# Load the necessary packages
+library(DESeq2)
+
+# Create the DESeqDataSet object
+dds <- DESeqDataSetFromMatrix(countData = FC,
+                              colData = coldata,
+                              design = ~ sex + Age)
+
+# Interaction effect
+design(dds) <- ~ Age * sex
+dds <- DESeq(dds)
+
+# Extract the results
+results <- results(dds)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds0 <- dds
+design(dds0)
+
+
+dds0 <- DESeq(dds0)
+res0 <- results(dds0)
+summary(res0)
+
+
+```
+
+## PRINCIPAL COMPONENT ANALYSIS OF LOGGED RAW DATA
+
+```{r}
+
+
+rld0 <- rlog(dds0)
+dds <- dds0
+rld <- rld0
+
+library(ggplot2)
+
+lograw <- DESeqTransform(dds)
+assay(lograw) <- log2(counts(dds)+1)
+data <- plotPCA(
+  lograw, ntop=nrow(lograw), 
+  intgroup=c("sex", "Age", "total"), returnData=TRUE)
+percentVar <- round(100 * attr(data, "percentVar"))
+ggplot(data, aes(PC1, PC2, color=sex, shape=Age, size=total)) +
+  geom_point() + 
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  ggtitle("Log transformed raw data")
+
+
+
+```
+
+```{r}
+# Filter the results based on adjusted p-value (e.g., < 0.05) and absolute log2 fold change threshold
+filtered_results <- subset(results, padj < 0.05 & abs(log2FoldChange) >= 1)
+
+# Save the filtered results to a CSV file (replace <output_file> with the desired output file path)
+write.csv(filtered_results, file = "DEGs.csv", row.names = TRUE)
+```
+
+**Task 3.** Normalize the data by library size using `DESeq2`. Show PCA again for library-size normalized data. Is the library size effect removed from the normalized data?
+
+## PRINCIPAL COMPONENT ANALYSIS OF LOG LIBRARY-SIZE NORMALIZED COUNT DATA
+
+```{r}
+ald <- DESeqTransform(dds)
+assay(ald) <- log2(counts(dds, normalized=TRUE) + 1)
+data <- plotPCA(
+  ald, ntop=nrow(ald), 
+  intgroup=c("sex", "Age", "total"), returnData=TRUE)
+percentVar <- round(100 * attr(data, "percentVar"))
+ggplot(data, aes(PC1, PC2, color=sex, shape=Age, size=total)) +
+  geom_point() + 
+  xlab(paste0("PC1: ", percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ", percentVar[2],"% variance")) +
+  ggtitle("Log library size normalized data")
+```
+
+## **Differentially expressed genes**
+
+**Task 4.** There are multiple contexts in which one can identify differentially expressed genes (DEGs). We will apply the GLM model with negative binomial distribution using `DESeq2`. We are interested in the following effects on gene expression:
+
+-   aging effect
+
+-   sex effect
+
+-   aging and sex interaction effect
+
+Specify a GLM model that best reflects both biological and any potential confounding effects.
+
+```{r}
+# Load the DESeq2 library
+library(DESeq2)
+
+# Specify the model formula
+model_formula <- ~ Age + sex + Age:sex
+
+# Create the DESeqDataSet object with the model formula
+dds <- DESeqDataSetFromMatrix(countData = FC, colData = coldata, design = model_formula)
+
+# Perform differential expression analysis
+dds <- DESeq(dds)
+
+# Extract the results
+results <- results(dds)
+
+# You can further filter the results based on p-values and log2 fold change thresholds
+filtered_results <- subset(results, padj < 0.05 & abs(log2FoldChange) >= 1)
+
+
+```
+
+**Task 5.** Determine DEGs for each effect of interest. Report the total number of DEGs at FDR 0.05, and visualize the top five genes for each effect of interest.
+
+```{r}
+# Aging effect
+results_age <- results(dds, contrast=c("Age", "20_months", "4_months"))
+# Sex effect
+results_sex <- results(dds, contrast=c("sex", "female", "male"))
+# Interaction effect
+design(dds) <- ~ Age * sex
+dds <- DESeq(dds) 
+
+# Extract the results for the interaction effect
+results_interaction <- results(dds)
+
+# Filter results based on FDR < 0.05
+alpha <- 0.05
+results_age_sig <- results_age[!is.na(results_age$padj) & results_age$padj < alpha, ]
+results_sex_sig <- results_sex[!is.na(results_sex$padj) & results_sex$padj < alpha, ]
+results_interaction_sig <- results_interaction[!is.na(results_interaction$padj) & results_interaction$padj < alpha, ]
+
+# Report the total number of DEGs
+total_DEGs_age <- nrow(results_age_sig)
+total_DEGs_sex <- nrow(results_sex_sig)
+total_DEGs_interaction <- nrow(results_interaction_sig)
+
+
+cat("Total DEGs for Aging Effect (FDR < 0.05):", total_DEGs_age, "\n")
+cat("Total DEGs for Sex Effect (FDR < 0.05):", total_DEGs_sex, "\n")
+cat("Total DEGs for interaction Effect (FDR < 0.05):", total_DEGs_interaction, "\n")
+# Visualize the top five genes for each effect
+top_n_age <- head(results_age_sig[order(results_age_sig$log2FoldChange, decreasing = TRUE), ], 5)
+top_n_sex <- head(results_sex_sig[order(results_sex_sig$log2FoldChange, decreasing = TRUE), ], 5)
+top_n_interaction <- head(results_interaction_sig[order(results_interaction_sig$log2FoldChange, decreasing = TRUE), ], 5)
+
+# Print the top DEGs for each effect
+print("Top DEGs for Aging Effect:")
+print(top_n_age)
+print("Top DEGs for Sex Effect:")
+print(top_n_sex)
+print("Top DEGs for interaction Effect:")
+print(top_n_interaction)
+
+```

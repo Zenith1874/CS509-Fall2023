@@ -1,0 +1,109 @@
+---
+title: "Untitled"
+format: pdf
+---
+### 3.1 Find out the top five genes with the greatest log fold change rg between ovary and testis and top five with the lowest rg  Visualize the expression for these top genes from the raw count data. You can use box plTo calculate the log fold change for each gene, the given formula is:
+To calculate the log fold change for each gene, the given formula is:
+rg = log2((1+govary)/(1+gtestis))
+
+```{r}
+# import gene_count_matrix.csv
+gene_count_matrix <- read.csv("E:/Language/R/gene_count_matrix.csv")
+
+# Calculate the log fold change for each gene
+gene_count_matrix$log_fold_change <- log2(
+  (1 + (gene_count_matrix$ENCLB117FKX + gene_count_matrix$ENCLB129EAK) / 2) / 
+  (1 + (gene_count_matrix$ENCLB597ZOR + gene_count_matrix$ENCLB925FOQ) / 2)
+)
+
+# Get the top and bottom five genes by fold change
+top_genes_greatest <- head(gene_count_matrix[order(-gene_count_matrix$log_fold_change), ], 5)
+top_genes_lowest <- head(gene_count_matrix[order(gene_count_matrix$log_fold_change), ], 5)
+print (top_genes_greatest)
+print(top_genes_lowest)
+
+# Visualizing these genes using a boxplot
+library(ggplot2)
+
+selected_genes <- rbind(top_genes_greatest, top_genes_lowest)
+melted_gene_data <- reshape2::melt(selected_genes, id.vars = c("gene_id", "log_fold_change"), measure.vars = c("ENCLB117FKX", "ENCLB129EAK", "ENCLB597ZOR", "ENCLB925FOQ"))
+
+ggplot(melted_gene_data, aes(x = gene_id, y = value, fill = variable)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Expression of Top Genes based on Log Fold Change", y = "Expression", x = "Gene ID")
+
+```
+
+### 3.2 Repeat 3.1 on the transcript read counts.
+
+
+
+```{r}
+# Import transcript_count_matrix.csv
+transcript_count_matrix <- read.csv("E:/Language/R/transcript_count_matrix.csv")
+
+# Calculate the log fold change for each transcript
+transcript_count_matrix$log_fold_change <- log2(
+  (1 + (transcript_count_matrix$ENCLB117FKX + transcript_count_matrix$ENCLB129EAK) / 2) / 
+  (1 + (transcript_count_matrix$ENCLB597ZOR + transcript_count_matrix$ENCLB925FOQ) / 2)
+)
+
+# Get the top and bottom five transcripts by fold change
+top_transcripts_greatest <- head(transcript_count_matrix[order(-transcript_count_matrix$log_fold_change), ], 5)
+top_transcripts_lowest <- head(transcript_count_matrix[order(transcript_count_matrix$log_fold_change), ], 5)
+print(top_transcripts_greatest)
+print(top_transcripts_lowest)
+
+# Visualizing these transcripts using a boxplot
+selected_transcripts <- rbind(top_transcripts_greatest, top_transcripts_lowest)
+melted_transcript_data <- reshape2::melt(selected_transcripts, id.vars = c("transcript_id", "log_fold_change"), measure.vars = c("ENCLB117FKX", "ENCLB129EAK", "ENCLB597ZOR", "ENCLB925FOQ"))
+
+ggplot(melted_transcript_data, aes(x = transcript_id, y = value, fill = variable)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Expression of Top Transcripts based on Log Fold Change", y = "Expression", x = "Transcript ID")
+
+
+```
+
+
+3.3 Are all top transcripts located within the genomic region of the top genes?
+
+# import merged.gtf(this is ENCLB117FKX.gtf ENCLB129EAK.gtf ENCLB597ZOR.gtf ENCLB925FOQ.gtf merged, use stringtie :
+stringtie --merge -p 8 -o E:/Language/R/merged.gtf E:/Language/R/mergelist.txt)
+
+```{r}
+library(rtracklayer)
+
+gtf_path <- "E:/Language/R/merged.gtf"
+merged_gtf <- import(gtf_path)
+
+genes <- merged_gtf[merged_gtf$type == "gene"]
+transcripts <- merged_gtf[merged_gtf$type == "transcript"]
+
+
+
+
+```
+
+
+```{r}
+ 
+results <- sapply(top_transcripts_greatest$transcript_id, function(transcript_id) {
+  transcript_region <- transcripts[transcripts$transcript_id == transcript_id, ]
+  overlapping_genes <- genes[genes$seqnames == transcript_region$seqnames & 
+                             genes$start <= transcript_region$end & 
+                             genes$end >= transcript_region$start, ]
+  
+  any(overlapping_genes$gene_id %in% top_genes_greatest$gene_id)
+})
+
+names(results) <- top_transcripts_greatest$transcript_id
+results
+
+
+```
+
+
+

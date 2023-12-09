@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Task1</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Task1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Task1_files/libs/quarto-html/quarto.js"></script>
+<script src="Task1_files/libs/quarto-html/popper.min.js"></script>
+<script src="Task1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Task1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Task1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Task1_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Task1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Task1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Task1_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Task1</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="task-1.-5-prepare-all-scrna-seq-count-data-into-a-single-r-object." class="level3">
+<h3 class="anchored" data-anchor-id="task-1.-5-prepare-all-scrna-seq-count-data-into-a-single-r-object.">Task 1. (5%) Prepare all scRNA-seq count data into a single R object.</h3>
+<section id="load-all-samples-and-create-a-singlecellexperiment-object-that-contains-necessary-column-data-to-annotate-the-experimental-design.-report-the-exact-numbers-of-cells-in-each-sample." class="level4">
+<h4 class="anchored" data-anchor-id="load-all-samples-and-create-a-singlecellexperiment-object-that-contains-necessary-column-data-to-annotate-the-experimental-design.-report-the-exact-numbers-of-cells-in-each-sample.">Load all samples and create a SingleCellExperiment object that contains necessary column data to annotate the experimental design. Report the exact numbers of cells in each sample.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the count matrices and metadata into lists</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>counts_list <span class="ot">&lt;-</span> <span class="fu">list</span>(P15_counts, P30_counts, P40_counts, P50_counts, P70_counts, Adult_counts, Adult_male_counts)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>metadata_list <span class="ot">&lt;-</span> <span class="fu">list</span>(P15_meta, P30_meta, P40_meta, P50_meta, P70_meta, Adult_meta, Adult_male_meta)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># lapply(counts_list[1:1], str)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lapply</span>(metadata_list, head, <span class="at">n =</span> <span class="dv">3</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+                   orig.ident nCount_RNA nFeature_RNA nCount_integrated
+1_AAACCTGAGGACGAAA          1       5341         1873                NA
+1_AAACCTGAGGCACATG          1       4725         1676                NA
+1_AAACCTGAGGTAGCCA          1       8118         2229                NA
+                   nFeature_integrated integrated_snn_res.6 Clustering NNPreds
+1_AAACCTGAGGACGAAA                  NA                   23          2       7
+1_AAACCTGAGGCACATG                  NA                   44        101     123
+1_AAACCTGAGGTAGCCA                  NA                  104         31      30
+                   NNPredsConfidence FinalIdents
+1_AAACCTGAGGACGAAA             0.714           7
+1_AAACCTGAGGCACATG             0.478         123
+1_AAACCTGAGGTAGCCA             0.982          30
+
+[[2]]
+                   orig.ident nCount_RNA nFeature_RNA nCount_integrated
+1_AAACCTGAGCTAACTC          1       4663         1766                NA
+1_AAAGATGTCACTATTC          1       2328         1163                NA
+1_AACACGTGTCAGAAGC          1       4421         1653                NA
+                   nFeature_integrated integrated_snn_res.6 Clustering NNPreds
+1_AAACCTGAGCTAACTC                  NA                   13         54      61
+1_AAAGATGTCACTATTC                  NA                   13         54      61
+1_AACACGTGTCAGAAGC                  NA                   13         54      61
+                   NNPredsConfidence FinalIdents
+1_AAACCTGAGCTAACTC             0.892          61
+1_AAAGATGTCACTATTC             0.950          61
+1_AACACGTGTCAGAAGC             0.990          61
+
+[[3]]
+                   orig.ident nCount_RNA nFeature_RNA nCount_integrated
+1_AAACCTGAGACTTTCG          1      10915         2452                NA
+1_AACTCTTTCCATGAAC          1       1307          623                NA
+1_ACGAGCCGTAAATACG          1       4964         1494                NA
+                   nFeature_integrated integrated_snn_res.6 Clustering NNPreds
+1_AAACCTGAGACTTTCG                  NA                   94        121     206
+1_AACTCTTTCCATGAAC                  NA                   94        121     206
+1_ACGAGCCGTAAATACG                  NA                   94        121     206
+                   NNPredsConfidence FinalIdents
+1_AAACCTGAGACTTTCG             0.982         206
+1_AACTCTTTCCATGAAC             0.880         206
+1_ACGAGCCGTAAATACG             0.946         206
+
+[[4]]
+                   orig.ident nCount_RNA nFeature_RNA nCount_integrated
+1_AAACCTGAGCCACGCT          1       2674          991                NA
+1_AACACGTGTATTCTCT          1       1083          518                NA
+1_AACCGCGGTTCTCATT          1      12407         2939                NA
+                   nFeature_integrated integrated_snn_res.6 Clustering NNPreds
+1_AAACCTGAGCCACGCT                  NA                   37          7     204
+1_AACACGTGTATTCTCT                  NA                   37          7     200
+1_AACCGCGGTTCTCATT                  NA                   58         80      66
+                   NNPredsConfidence FinalIdents FinalIdents.T45separate
+1_AAACCTGAGCCACGCT             0.824         204                     204
+1_AACACGTGTATTCTCT             0.510           0                       0
+1_AACCGCGGTTCTCATT             0.730          66                      66
+
+[[5]]
+                   orig.ident nCount_RNA nFeature_RNA nCount_integrated
+5_AAACCTGAGAGACGAA          5       8947         2122                NA
+5_AAACGGGCATACGCCG          5      10388         2391                NA
+5_AAAGTAGTCCTTGACC          5      17681         3017                NA
+                   nFeature_integrated integrated_snn_res.6 Clustering NNPreds
+5_AAACCTGAGAGACGAA                  NA                   33         69      24
+5_AAACGGGCATACGCCG                  NA                   33         69      24
+5_AAAGTAGTCCTTGACC                  NA                   33         69     114
+                   NNPredsConfidence FinalIdents
+5_AAACCTGAGAGACGAA             0.902          24
+5_AAACGGGCATACGCCG             0.736          24
+5_AAAGTAGTCCTTGACC             1.000         114
+
+[[6]]
+                     orig.ident nCount_RNA nFeature_RNA percent.mito male_cells
+AAACCTGAGTTAACGA_1 Adult_1d_N_1       1042          557   0.06333973          0
+AAACCTGCATCGGACC_1 Adult_1d_N_1       2356         1112   0.02504244          0
+AAACCTGGTACCGAGA_1 Adult_1d_N_1       2056          932   0.01945525          0
+                   nCount_integrated nFeature_integrated integrated_snn_res.10
+AAACCTGAGTTAACGA_1                NA                  NA                     1
+AAACCTGCATCGGACC_1                NA                  NA                    17
+AAACCTGGTACCGAGA_1                NA                  NA                    76
+                   original.IDs Clustering FinalIdents
+AAACCTGAGTTAACGA_1            1        133         234
+AAACCTGCATCGGACC_1           17        125         125
+AAACCTGGTACCGAGA_1           76        122         227
+
+[[7]]
+                     orig.ident nCount_RNA nFeature_RNA percent.mito male_cells
+AAACCTGAGAAACGAG_1 Adult_1d_N_1       3502         1391   0.05282696          1
+AAACCTGAGAAGAAGC_1 Adult_1d_N_1       1158          620   0.09758204          1
+AAACCTGAGCCAACAG_1 Adult_1d_N_1       5305         1705   0.04033930          1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(P15_counts, P30_counts, P40_counts, P50_counts, P70_counts, Adult_counts, Adult_male_counts)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(P15_meta, P30_meta, P40_meta, P50_meta, P70_meta, Adult_meta, Adult_male_meta)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform garbage collection</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   3587089  191.6    6719584   358.9    5147664   275.0
+Vcells 545911222 4165.0 2181599878 16644.3 2956409541 22555.7</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Aligning genes across all samples</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  all_genes <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(intersect, <span class="fu">lapply</span>(counts_list, rownames))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  counts_list_aligned <span class="ot">&lt;-</span> <span class="fu">lapply</span>(counts_list, <span class="cf">function</span>(cts) {</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    cts[all_genes, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Aligning columns of metadata</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>common_meta_cols <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(intersect, <span class="fu">lapply</span>(metadata_list, colnames))</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>metadata_list_aligned <span class="ot">&lt;-</span> <span class="fu">lapply</span>(metadata_list, <span class="cf">function</span>(df) {</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  df[, common_meta_cols]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Combining counts and metadata</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>all_counts_combined <span class="ot">&lt;-</span> <span class="fu">do.call</span>(cbind, counts_list_aligned)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>all_metadata_combined <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, metadata_list_aligned)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating a SingleCellExperiment object</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">SingleCellExperiment</span>(<span class="at">assays =</span> <span class="fu">list</span>(<span class="at">counts =</span> all_counts_combined))</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(sce) <span class="ot">&lt;-</span> <span class="fu">DataFrame</span>(all_genes)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="fu">colData</span>(sce) <span class="ot">&lt;-</span> <span class="fu">DataFrame</span>(all_metadata_combined)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensuring that row names and column names in rowData and colData match counts and metadata</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sce) <span class="ot">&lt;-</span> all_genes</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sce) <span class="ot">&lt;-</span> <span class="fu">rownames</span>(all_metadata_combined)</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Reporting the number of cells in each sample</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>sample_cell_counts <span class="ot">&lt;-</span> <span class="fu">lapply</span>(counts_list, ncol)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>sample_cell_counts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] 31018
+
+[[2]]
+[1] 35758
+
+[[3]]
+[1] 24084
+
+[[4]]
+[1] 31340
+
+[[5]]
+[1] 43740
+
+[[6]]
+[1] 109743
+
+[[7]]
+[1] 11133</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(all_counts_combined,counts_list_aligned,counts_list)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">remove</span>(all_metadata_combined)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform garbage collection</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">gc</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   8294877  443.0   15243398   814.1   11706240   625.2
+Vcells 553320756 4221.6 2010703248 15340.5 2956409541 22555.7</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="task-2.-35-perform-cell-quality-control" class="level3">
+<h3 class="anchored" data-anchor-id="task-2.-35-perform-cell-quality-control">Task 2. (35%) Perform cell quality control</h3>
+<section id="show-histograms-of-total-counts-of-cells-and-number-of-detected-genes-in-cells." class="level4">
+<h4 class="anchored" data-anchor-id="show-histograms-of-total-counts-of-cells-and-number-of-detected-genes-in-cells.">2.1 Show histograms of total counts of cells and number of detected genes in cells.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total counts per cell</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>total_counts_per_cell <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">counts</span>(sce))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of detected genes per cell</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>detected_genes_per_cell <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">counts</span>(sce) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot histograms</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(total_counts_per_cell, <span class="at">main =</span> <span class="st">"Total Counts per Cell"</span>, <span class="at">xlab =</span> <span class="st">"Total Counts"</span>, <span class="at">breaks =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(detected_genes_per_cell, <span class="at">main =</span> <span class="st">"Detected Genes per Cell"</span>, <span class="at">xlab =</span> <span class="st">"Number of Genes"</span>, <span class="at">breaks =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="remove-cells-of-low-total-counts-or-number-of-detected-genes.-report-how-many-cells-are-removed." class="level4">
+<h4 class="anchored" data-anchor-id="remove-cells-of-low-total-counts-or-number-of-detected-genes.-report-how-many-cells-are-removed.">2.2 Remove cells of low total counts or number of detected genes. Report how many cells are removed.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of cells in sce:"</span>, <span class="fu">ncol</span>(sce), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of cells in sce: 286816 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of genes in sce:"</span>, <span class="fu">nrow</span>(sce), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of genes in sce: 9293 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total counts per cell</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>total_counts_per_cell <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">counts</span>(sce))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of detected genes per cell</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>detected_genes_per_cell <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">counts</span>(sce) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check lengths</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Length of total_counts_per_cell:"</span>, <span class="fu">length</span>(total_counts_per_cell), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length of total_counts_per_cell: 286816 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Length of detected_genes_per_cell:"</span>, <span class="fu">length</span>(detected_genes_per_cell), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length of detected_genes_per_cell: 9293 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Correct calculation for the number of detected genes per cell</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>detected_genes_per_cell <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">counts</span>(sce) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check lengths again</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Length of total_counts_per_cell:"</span>, <span class="fu">length</span>(total_counts_per_cell), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length of total_counts_per_cell: 286816 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Length of detected_genes_per_cell:"</span>, <span class="fu">length</span>(detected_genes_per_cell), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Length of detected_genes_per_cell: 286816 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total counts per cell</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>total_counts_per_cell <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">counts</span>(sce))</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the number of detected genes per cell</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>detected_genes_per_cell <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">counts</span>(sce) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define thresholds</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># You can adjust these thresholds based on your dataset and analysis needs</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>threshold_counts <span class="ot">&lt;-</span> <span class="fu">median</span>(total_counts_per_cell) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>threshold_genes <span class="ot">&lt;-</span> <span class="fu">median</span>(detected_genes_per_cell) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter cells</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>filtered_sce <span class="ot">&lt;-</span> sce[, total_counts_per_cell <span class="sc">&gt;</span> threshold_counts <span class="sc">&amp;</span> detected_genes_per_cell <span class="sc">&gt;</span> threshold_genes]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in total_counts_per_cell &gt; threshold_counts &amp; detected_genes_per_cell &gt;
+: 长的对象长度不是短的对象长度的整倍数</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Report the number of cells removed</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>cells_removed <span class="ot">&lt;-</span> <span class="fu">ncol</span>(sce) <span class="sc">-</span> <span class="fu">ncol</span>(filtered_sce)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Number of cells removed:"</span>, cells_removed, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Number of cells removed: 126720 </code></pre>
+</div>
+</div>
+</section>
+<section id="remove-genes-that-are-zero-in-all-samples.-report-how-many-genes-are-removed." class="level4">
+<h4 class="anchored" data-anchor-id="remove-genes-that-are-zero-in-all-samples.-report-how-many-genes-are-removed.">2.3 Remove genes that are zero in all samples. Report how many genes are removed.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find genes that are not expressed in any cells</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>non_expressed_genes <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">counts</span>(sce) <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">==</span> <span class="dv">0</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove these genes</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>filtered_sce <span class="ot">&lt;-</span> filtered_sce[<span class="sc">!</span>non_expressed_genes, ]</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Report the number of genes removed</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Removed genes:"</span>, <span class="fu">sum</span>(non_expressed_genes), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Removed genes: 0 </code></pre>
+</div>
+</div>
+</section>
+<section id="show-pca-before-and-after-quality-control." class="level4">
+<h4 class="anchored" data-anchor-id="show-pca-before-and-after-quality-control.">2.4 Show PCA before and after quality control.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-normalize the counts if not already done</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(sce)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>filtered_sce <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(filtered_sce)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run PCA on both datasets</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>sce <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(sce, <span class="at">ncomponents =</span> <span class="dv">2</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>filtered_sce <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(filtered_sce, <span class="at">ncomponents =</span> <span class="dv">2</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot PCA for original  data</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(sce, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot PCA for quality-controlled data</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(filtered_sce, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="task-3.-35-carry-out-library-size-normalization" class="level3">
+<h3 class="anchored" data-anchor-id="task-3.-35-carry-out-library-size-normalization">Task 3. (35%) Carry out library size normalization</h3>
+<section id="perform-library-size-normalization-using-two-methods." class="level4">
+<h4 class="anchored" data-anchor-id="perform-library-size-normalization-using-two-methods.">3.1 Perform library size normalization using two methods.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scran)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy the SingleCellExperiment object</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>sce_norm <span class="ot">&lt;-</span> sce</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate CPM normalization for sce_norm</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>sce_norm_cpm <span class="ot">&lt;-</span> <span class="fu">calculateCPM</span>(sce_norm)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="fu">assays</span>(sce_norm)<span class="sc">$</span>CPM <span class="ot">&lt;-</span> sce_norm_cpm  <span class="co"># Store CPM in a new assay for sce_norm</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-transform the CPM values manually for sce_norm</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="fu">assays</span>(sce_norm)<span class="sc">$</span>logCPM <span class="ot">&lt;-</span> <span class="fu">log1p</span>(<span class="fu">assays</span>(sce_norm)<span class="sc">$</span>CPM)  <span class="co"># Use log1p for log-transformation</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Proceed with scran normalization for sce_norm</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>clusters <span class="ot">&lt;-</span> <span class="fu">quickCluster</span>(sce_norm)</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>sce_norm <span class="ot">&lt;-</span> <span class="fu">computeSumFactors</span>(sce_norm, <span class="at">clusters=</span>clusters)</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>sce_norm <span class="ot">&lt;-</span> <span class="fu">logNormCounts</span>(sce_norm)  <span class="co"># Log-transformed normalized counts</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA for CPM-normalized data</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a>sce_norm_cpm_pca <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(sce_norm, <span class="at">exprs_values=</span><span class="st">"logCPM"</span>, <span class="at">ncomponents=</span><span class="dv">2</span>)</span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA for Scran-normalized data</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a>sce_norm_scran_pca <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(sce_norm, <span class="at">ncomponents=</span><span class="dv">2</span>)</span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-27"><a href="#cb31-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot PCA for CPM-normalized data</span></span>
+<span id="cb31-28"><a href="#cb31-28" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(sce_norm_cpm_pca, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot PCA for Scran-normalized data</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(sce_norm_scran_pca, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="show-pca-before-and-after-library-size-normalization." class="level4">
+<h4 class="anchored" data-anchor-id="show-pca-before-and-after-library-size-normalization.">3.3 Show PCA before and after library size normalization.</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scran)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Copy the SingleCellExperiment object for raw data PCA</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>sce_raw <span class="ot">&lt;-</span> sce</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Run PCA on the raw count data</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>sce_raw_pca <span class="ot">&lt;-</span> <span class="fu">runPCA</span>(sce_raw, <span class="at">exprs_values =</span> <span class="st">"counts"</span>, <span class="at">ncomponents =</span> <span class="dv">2</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot PCA for raw count data</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(sce_raw_pca, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA Before Normalization"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now plot the PCA on normalized data, which you have already performed</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(sce_norm_cpm_pca, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA After CPM Normalization"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(sce_norm_scran_pca, <span class="at">colour_by =</span> <span class="st">"orig.ident"</span>) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">"PCA After Scran Normalization"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Task1_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
